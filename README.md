@@ -1,13 +1,12 @@
-# template3-expressjs
+# MESSAGING APP API
 
-This express template is build as a RESTAPI and made in a way only specific sites can access its data
+This the backend of the messaging app project I build to allow users to communicate with one another
+
+## MESSAGING APP CLIENT GITHUB REPO
+
+https://github.com/ChoforJr/messaging-app
 
 # Author : FORSAKANG CHOFOR JUNIOR
-
-# This express template using prisma
-
-It will contain some files you may not need It is up to you remove and add
-what-ever you need
 
 # Run the command below in your terminal to genrate a key for secret key
 

@@ -1,12 +1,11 @@
 {
-  "name": "template3-expressjs",
+  "name": "messaging-app-api",
   "version": "1.0.0",
-  "description": "This express template is build as a RESTAPI and made in a way only specific sites can access its data",
+  "description": "This the backend of the messaging app project I build to allow users to communicate with one another",
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "copy-assets": "cp -R views dist && cp -R public dist",
-    "build": "npx prisma generate && npx tsc && npm run copy-assets",
+    "build": "npx prisma generate && npx tsc",
     "start": "node dist/app.js",
     "dev": "node --watch app.js",
     "prismaGen": "npx prisma generate",
@@ -16,15 +15,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ChoforJr/template3-expressjs.git"
+    "url": "git+https://github.com/ChoforJr/messaging-app-api.git"
   },
   "keywords": [],
   "author": "FORSAKANG CHOFOR JUNIOR",
   "license": "",
   "bugs": {
-    "url": "https://github.com/ChoforJr/template3-expressjs/issues"
+    "url": "https://github.com/ChoforJr/messaging-app-api/issues"
   },
-  "homepage": "https://github.com/ChoforJr/template3-expressjs#readme",
+  "homepage": "https://github.com/ChoforJr/messaging-app-api#readme",
   "dependencies": {
     "@prisma/client": "^6.19.0",
     "bcryptjs": "^3.0.2",
