@@ -25,7 +25,8 @@
   },
   "homepage": "https://github.com/ChoforJr/messaging-app-api#readme",
   "dependencies": {
-    "@prisma/client": "^6.19.0",
+    "@prisma/adapter-pg": "^7.3.0",
+    "@prisma/client": "^7.3.0",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.8.0",
     "cors": "^2.8.5",
@@ -47,7 +48,7 @@
     "@types/passport": "^1.0.17",
     "@types/passport-local": "^1.0.38",
     "ejs-lint": "^2.0.1",
-    "prisma": "^6.19.0",
+    "prisma": "^7.3.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }

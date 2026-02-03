@@ -5,13 +5,12 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider     = "prisma-client-js"
-  moduleFormat = "esm"
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -22,8 +21,7 @@ model User {
   sentMessages     Message[] @relation("UserSendMessage")
   receivedMessages Message[] @relation("UserReceiveMessage")
   adminForGroups   Group[]   @relation("UserGroupAdmin")
-  joinedGroup      Group?    @relation("UserJoinGroup", fields: [joinId], references: [id], onDelete: Cascade)
-  joinId           Int?
+  joinedGroup      Group[]   @relation("UserJoinGroup")
   profile          Profile?
 }
 
@@ -38,41 +36,42 @@ model Profile {
 }
 
 model Message {
-  id          Int      @id @default(autoincrement())
-  content     String?
-  createdAt   DateTime @default(now())
-  author      User     @relation("UserSendMessage", fields: [authorId], references: [id], onDelete: Cascade)
-  authorId    Int
-  toUser      User?    @relation("UserReceiveMessage", fields: [toUserId], references: [id], onDelete: Cascade)
-  toUserId    Int?
-  toGroup     Group?   @relation("GroupReceiveMessage", fields: [toGroupId], references: [id], onDelete: Cascade)
-  toGroupId   Int?
-  Files       Files[]  @relation("FileOfMessage")
+  id        Int      @id @default(autoincrement())
+  content   String?
+  createdAt DateTime @default(now())
+  author    User     @relation("UserSendMessage", fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  Int
+  toUser    User?    @relation("UserReceiveMessage", fields: [toUserId], references: [id], onDelete: Cascade)
+  toUserId  Int?
+  toGroup   Group?   @relation("GroupReceiveMessage", fields: [toGroupId], references: [id], onDelete: Cascade)
+  toGroupId Int?
+  Files     Files[]  @relation("FileOfMessage")
 }
 
 model Group {
-  id            Int         @id @default(autoincrement())
-  description   String      @default("This is a fun group, come and join")
-  createdAt     DateTime    @default(now())
-  admin         User        @relation("UserGroupAdmin",fields: [adminId], references: [id], onDelete: Cascade)
-  adminId       Int
-  message       Message[]   @relation("GroupReceiveMessage")
-  profilePhoto  Files?      @relation("GroupProfilePhoto")
-  members       User[]      @relation("UserJoinGroup")
+  id           Int       @id @default(autoincrement())
+  name         String
+  description  String    @default("This is a fun group, come and join")
+  createdAt    DateTime  @default(now())
+  admin        User      @relation("UserGroupAdmin", fields: [adminId], references: [id], onDelete: Cascade)
+  adminId      Int
+  message      Message[] @relation("GroupReceiveMessage")
+  profilePhoto Files?    @relation("GroupProfilePhoto")
+  members      User[]    @relation("UserJoinGroup")
 }
 
 model Files {
-  id            Int         @id @default(autoincrement())
-  originalName  String
-  fileName      String
-  mimeType      String
-  size          Int
-  uploadTime    DateTime    @default(now())
-  url           String
-  message       Message?    @relation("FileOfMessage",fields: [messageId], references: [id], onDelete: Cascade)
-  messageId     Int?
-  group         Group?      @relation("GroupProfilePhoto",fields: [groupId], references: [id], onDelete: Cascade)
-  groupId       Int?        @unique
-  profile       Profile?    @relation("ProfilePhoto",fields: [ProfileId], references: [id], onDelete: Cascade)
-  ProfileId     Int?        @unique
+  id           Int      @id @default(autoincrement())
+  originalName String
+  fileName     String
+  mimeType     String
+  size         Int
+  uploadTime   DateTime @default(now())
+  url          String
+  message      Message? @relation("FileOfMessage", fields: [messageId], references: [id], onDelete: Cascade)
+  messageId    Int?
+  group        Group?   @relation("GroupProfilePhoto", fields: [groupId], references: [id], onDelete: Cascade)
+  groupId      Int?     @unique
+  profile      Profile? @relation("ProfilePhoto", fields: [ProfileId], references: [id], onDelete: Cascade)
+  ProfileId    Int?     @unique
 }

@@ -6,7 +6,7 @@ import "./config/passport.js";
 import cors from "cors";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
-const whitelist = [process.env.ALLOWED_URL1, process.env.ALLOWED_URL2];
+const whitelist = [process.env.ALLOWED_URL1];
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -38,7 +38,6 @@ app.use(cors(corsOptions));
 
 console.log("--- CORS DEBUG ---");
 console.log("Allowed URL 1:", process.env.ALLOWED_URL1);
-console.log("Allowed URL 2:", process.env.ALLOWED_URL2);
 console.log("Current CORS Options:", corsOptions.origin);
 console.log("------------------");
 
