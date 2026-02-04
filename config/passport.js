@@ -11,11 +11,11 @@ import {
 } from "passport-jwt";
 import jwt from "jsonwebtoken";
 
-import { getUserInfoByUsername } from "../prisma_queries/find.js";
+import { findUserByUsername } from "../prisma_queries/find.js";
 
 async function verifyCallback(username, password, done) {
   try {
-    const user = await getUserInfoByUsername(username.toLowerCase());
+    const user = await findUserByUsername(username.toLowerCase());
 
     if (!user) {
       return done(null, false, { message: "Incorrect username" });
@@ -48,23 +48,31 @@ passport.use(
       } catch (error) {
         return done(error);
       }
-    }
-  )
+    },
+  ),
 );
 
 export async function authLogin(req, res, next) {
   passport.authenticate("login", async (err, user, info) => {
     try {
-      if (err || !user) {
-        const error = new Error(info?.message || "An error occurred.");
-        return next(error);
+      if (err) {
+        return res.status(500).json({
+          message: "Internal Server Error",
+          error: err.message,
+        });
+      }
+      if (!user) {
+        // "info" contains the message object you passed: { message: "Incorrect password" }
+        return res.status(401).json({
+          error: info.message || "Authentication failed",
+        });
       }
 
       req.login(user, { session: false }, async (error) => {
         if (error) return next(error);
 
         // We verify the user, now we generate the token
-        const body = { id: user.id, username: user.username };
+        const body = { id: user.id, username: user.username, role: user.role };
         const token = jwt.sign({ user: body }, process.env.SECRET_KEY, {
           expiresIn: "1h",
         });

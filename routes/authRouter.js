@@ -2,15 +2,10 @@ import { Router } from "express";
 import passport from "passport";
 import { authLogin } from "../config/passport.js";
 
-import { addNewUser } from "../controllers/postToDB.js";
-import {
-  checkSignUpValidationResult,
-  validateSignUpRules,
-} from "..//validations/validateSignUp.js";
-import {
-  validateLogInRules,
-  checkLoginValidationResult,
-} from "..//validations/validateLogIn.js";
+import { addNewUser } from "../controllers/add.js";
+import { validateSignUpRules } from "..//validations/validateSignUp.js";
+import { checkValidationResult } from "../validations/checkValidationResult.js";
+import { validateLogInRules } from "..//validations/validateLogIn.js";
 import indexRouter from "./indexRouter.js";
 
 const authRouter = Router();
@@ -18,21 +13,16 @@ const authRouter = Router();
 authRouter.post(
   "/signup",
   validateSignUpRules,
-  checkSignUpValidationResult,
-  addNewUser
+  checkValidationResult,
+  addNewUser,
 );
 
-authRouter.post(
-  "/login",
-  validateLogInRules,
-  checkLoginValidationResult,
-  authLogin
-);
+authRouter.post("/login", validateLogInRules, checkValidationResult, authLogin);
 
 authRouter.use(
   "/",
   passport.authenticate("jwt", { session: false }),
-  indexRouter
+  indexRouter,
 );
 
 export default authRouter;
