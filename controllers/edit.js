@@ -3,7 +3,10 @@ import {
   updatePassword,
   updateDisplayName,
   updateBio,
+  updateGroupInfo,
+  updateGroupAdmin,
 } from "../prisma_queries/update.js";
+import { findGroupByID } from "../prisma_queries/find.js";
 import { matchedData } from "express-validator";
 import { hash } from "bcryptjs";
 
@@ -43,6 +46,61 @@ export async function editBio(req, res, next) {
   try {
     const { newBio } = matchedData(req);
     await updateBio(req.user.id, newBio);
+    res.sendStatus(200);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function editGroupName(req, res, next) {
+  try {
+    const { name } = matchedData(req);
+    const group = await findGroupByID(Number(req.params.groupId));
+    if (!group) {
+      return res.status(404).json("Group Not found.");
+    }
+    if (group.adminId !== req.user.id) {
+      return res.status(404).json("You are not authorized to do this.");
+    }
+    await updateGroupInfo(Number(req.params.groupId), "name", name);
+    res.sendStatus(200);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function editGroupDescription(req, res, next) {
+  try {
+    const { description } = matchedData(req);
+    const group = await findGroupByID(Number(req.params.groupId));
+    if (!group) {
+      return res.status(404).json("Group Not found.");
+    }
+    if (group.adminId !== req.user.id) {
+      return res.status(404).json("You are not authorized to do this.");
+    }
+    await updateGroupInfo(
+      Number(req.params.groupId),
+      "description",
+      description,
+    );
+    res.sendStatus(200);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function editGroupAdmin(req, res, next) {
+  try {
+    const { newAdminID } = matchedData(req);
+    const group = await findGroupByID(Number(req.params.groupId));
+    if (!group) {
+      return res.status(404).json("Group Not found.");
+    }
+    if (group.adminId !== req.user.id) {
+      return res.status(404).json("You are not authorized to do this.");
+    }
+    await updateGroupAdmin(Number(req.params.groupId), Number(newAdminID));
     res.sendStatus(200);
   } catch (err) {
     return next(err);

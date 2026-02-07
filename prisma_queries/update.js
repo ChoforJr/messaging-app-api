@@ -43,3 +43,27 @@ export async function updatePassword(userId, newPassword) {
     },
   });
 }
+
+export async function updateGroupInfo(groupId, column, colContent) {
+  await prisma.group.update({
+    where: {
+      id: groupId,
+    },
+    data: {
+      [column]: colContent,
+    },
+  });
+}
+
+export async function updateGroupAdmin(groupId, newAdminID) {
+  await prisma.group.update({
+    where: {
+      id: groupId,
+    },
+    data: {
+      admin: {
+        connect: { id: newAdminID },
+      },
+    },
+  });
+}

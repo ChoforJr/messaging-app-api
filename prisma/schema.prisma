@@ -20,19 +20,19 @@ model User {
   createdAt        DateTime  @default(now())
   sentMessages     Message[] @relation("UserSendMessage")
   receivedMessages Message[] @relation("UserReceiveMessage")
-  adminForGroups   Group[]   @relation("UserGroupAdmin")
-  joinedGroup      Group[]   @relation("UserJoinGroup")
   profile          Profile?
 }
 
 model Profile {
-  id          Int      @id @default(autoincrement())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      Int      @unique
-  displayName String
-  bio         String?
-  photo       Files?   @relation("ProfilePhoto")
-  createdAt   DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int      @unique
+  displayName    String
+  bio            String?
+  photo          Files?   @relation("ProfilePhoto")
+  createdAt      DateTime @default(now())
+  joinedGroup    Group[]  @relation("UserJoinGroup")
+  adminForGroups Group[]  @relation("UserGroupAdmin")
 }
 
 model Message {
@@ -53,11 +53,11 @@ model Group {
   name         String
   description  String    @default("This is a fun group, come and join")
   createdAt    DateTime  @default(now())
-  admin        User      @relation("UserGroupAdmin", fields: [adminId], references: [id], onDelete: Cascade)
+  admin        Profile   @relation("UserGroupAdmin", fields: [adminId], references: [id], onDelete: Cascade)
   adminId      Int
   message      Message[] @relation("GroupReceiveMessage")
   profilePhoto Files?    @relation("GroupProfilePhoto")
-  members      User[]    @relation("UserJoinGroup")
+  members      Profile[] @relation("UserJoinGroup")
 }
 
 model Files {

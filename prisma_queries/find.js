@@ -37,3 +37,40 @@ export async function findProfiles() {
   });
   return profiles;
 }
+
+export async function findAllGroups() {
+  const groups = await prisma.group.findMany({
+    include: {
+      members: true,
+      profilePhoto: true,
+    },
+  });
+  return groups;
+}
+
+export async function findAllMemberGroups(userID) {
+  const groups = await prisma.group.findMany({
+    where: {
+      members: {
+        some: {
+          id: userID,
+        },
+      },
+    },
+    include: {
+      members: true,
+      profilePhoto: true,
+      message: true,
+    },
+  });
+  return groups;
+}
+
+export async function findGroupByID(groupID) {
+  const groups = await prisma.group.findUnique({
+    where: {
+      id: groupID,
+    },
+  });
+  return groups;
+}

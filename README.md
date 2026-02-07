@@ -13,3 +13,9 @@ https://github.com/ChoforJr/messaging-app
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 
 Copy the output and assign it to a secret key of your choice in your .env file
+
+# There will be a conflict with multer-storage-cloudinary package you may need the below
+
+# command to bypass that error
+
+npm install multer-storage-cloudinary --legacy-peer-deps

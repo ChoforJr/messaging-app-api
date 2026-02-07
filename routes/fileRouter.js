@@ -1,7 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
-import { addProfilePhoto } from "../controllers/add.js";
-import { removeProfilePhoto } from "../controllers/remove.js";
+import { addProfilePhoto, addGroupPhoto } from "../controllers/add.js";
+import { removeProfilePhoto, removeGroupPhoto } from "../controllers/remove.js";
 import { cloudStorage } from "../config/cloudinary.js";
 
 const allowedMimeTypes = ["image/jpeg", "image/png"];
@@ -27,6 +27,13 @@ const fileRouter = Router();
 
 fileRouter.post("/profile/photo", uploads.array("uploads", 1), addProfilePhoto);
 fileRouter.delete("/profile/photo/:fileID", removeProfilePhoto);
+
+fileRouter.post(
+  "/group/photo/:groupId",
+  uploads.array("uploads", 1),
+  addGroupPhoto,
+);
+fileRouter.delete("/group/photo/:fileID", removeGroupPhoto);
 
 fileRouter.use((err, req, res, next) => {
   console.error(err.stack);
