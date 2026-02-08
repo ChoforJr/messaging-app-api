@@ -98,9 +98,7 @@ export async function findMessagesByUserID(userID) {
   const messages = await prisma.message.findMany({
     where: {
       OR: [{ authorId: userID }, { toUserId: userID }],
-      NOT: {
-        toGroupId: { not: null },
-      },
+      toGroupId: null,
     },
     include: {
       Files: {
