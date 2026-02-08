@@ -1,4 +1,4 @@
-import {} from "../controllers/read.js";
+import { readMessagesByUserID } from "../controllers/read.js";
 import {
   validateText,
   validateUserID,
@@ -25,6 +25,8 @@ messageRouter.post(
   checkValidationResult,
   addTextOnlyMessage,
 );
+
+messageRouter.get("/self/involved", readMessagesByUserID);
 
 messageRouter.use("/image", fileRouter);
 

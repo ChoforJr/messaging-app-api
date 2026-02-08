@@ -4,6 +4,7 @@ import {
   findProfiles,
   findAllGroups,
   findAllMemberGroups,
+  findMessagesByUserID,
 } from "../prisma_queries/find.js";
 
 export async function readUserByID(req, res, next) {
@@ -56,6 +57,15 @@ export async function readAllMemberGroup(req, res, next) {
   try {
     const groups = await findAllMemberGroups(req.user.id);
     res.json(groups);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function readMessagesByUserID(req, res, next) {
+  try {
+    const messages = await findMessagesByUserID(req.user.id);
+    res.json(messages);
   } catch (err) {
     return next(err);
   }

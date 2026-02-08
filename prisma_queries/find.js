@@ -65,6 +65,11 @@ export async function findAllMemberGroups(userID) {
       profilePhoto: true,
       message: {
         include: {
+          author: {
+            select: {
+              profile: true,
+            },
+          },
           Files: {
             orderBy: {
               id: "desc",
@@ -87,4 +92,31 @@ export async function findGroupByID(groupID) {
     },
   });
   return groups;
+}
+
+export async function findMessagesByUserID(userID) {
+  const messages = await prisma.message.findMany({
+    where: {
+      OR: [{ authorId: userID }, { toUserId: userID }],
+      NOT: {
+        toGroupId: { not: null },
+      },
+    },
+    include: {
+      Files: {
+        orderBy: {
+          id: "desc",
+        },
+      },
+      toUser: {
+        select: {
+          profile: true,
+        },
+      },
+    },
+    orderBy: {
+      id: "asc",
+    },
+  });
+  return messages;
 }
