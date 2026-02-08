@@ -55,3 +55,28 @@ export async function createGroup(adminID, name, description) {
   });
   return message;
 }
+
+export async function createImageOnlyMessage(
+  authorID,
+  toUserID,
+  toGroupID,
+  data,
+) {
+  const message = await prisma.message.create({
+    data: {
+      authorId: authorID,
+      toUserId: toUserID,
+      toGroupId: toGroupID,
+      Files: {
+        createMany: {
+          data,
+          skipDuplicates: true,
+        },
+      },
+    },
+    include: {
+      Files: true,
+    },
+  });
+  return message;
+}

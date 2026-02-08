@@ -26,6 +26,6 @@ messageRouter.post(
   addTextOnlyMessage,
 );
 
-messageRouter.use("/file", fileRouter);
+messageRouter.use("/image", fileRouter);
 
 export default messageRouter;

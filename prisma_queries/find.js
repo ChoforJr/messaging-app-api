@@ -44,6 +44,9 @@ export async function findAllGroups() {
       members: true,
       profilePhoto: true,
     },
+    orderBy: {
+      id: "asc",
+    },
   });
   return groups;
 }
@@ -60,7 +63,18 @@ export async function findAllMemberGroups(userID) {
     include: {
       members: true,
       profilePhoto: true,
-      message: true,
+      message: {
+        include: {
+          Files: {
+            orderBy: {
+              id: "desc",
+            },
+          },
+        },
+        orderBy: {
+          id: "desc",
+        },
+      },
     },
   });
   return groups;

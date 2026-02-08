@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { addImageOnlyMessage } from "../controllers/add.js";
 import multer from "multer";
 import { addProfilePhoto, addGroupPhoto } from "../controllers/add.js";
 import { removeProfilePhoto, removeGroupPhoto } from "../controllers/remove.js";
@@ -33,7 +34,19 @@ fileRouter.post(
   uploads.array("uploads", 1),
   addGroupPhoto,
 );
+
 fileRouter.delete("/group/photo/:fileID", removeGroupPhoto);
+
+fileRouter.post(
+  "/chat/toUser/:userID",
+  uploads.array("uploads", 5),
+  addImageOnlyMessage,
+);
+fileRouter.post(
+  "/chat/toGroup/:groupID",
+  uploads.array("uploads", 5),
+  addImageOnlyMessage,
+);
 
 fileRouter.use((err, req, res, next) => {
   console.error(err.stack);
