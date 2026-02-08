@@ -27,7 +27,7 @@ export async function createTextOnlyMessage(
   toUserID,
   toGroupID,
 ) {
-  const message = await prisma.message.createManyAndReturn({
+  const message = await prisma.message.create({
     data: {
       content: content,
       authorId: authorID,

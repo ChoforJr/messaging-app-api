@@ -17,7 +17,7 @@ export const validateUserID = [
     .withMessage("Receipent ID has to be an interger")
     .custom(async (value) => {
       const user = await findProfileByUserID(Number(value));
-      if (!user) {
+      if (user) {
         return true;
       }
       throw new Error("User doesn't exist");
@@ -33,7 +33,7 @@ export const validateGroupID = [
     .withMessage("Group ID has to be an interger")
     .custom(async (value) => {
       const group = await findGroupByID(Number(value));
-      if (!group) {
+      if (group) {
         return true;
       }
       throw new Error("Group doesn't exist");

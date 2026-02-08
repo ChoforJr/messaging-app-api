@@ -8,6 +8,7 @@ import {
   joinGroup,
   leaveGroup,
   adminRemoveMember,
+  adminAddMember,
 } from "../prisma_queries/update.js";
 import { findGroupByID } from "../prisma_queries/find.js";
 import { matchedData } from "express-validator";
@@ -128,23 +129,46 @@ export async function editGroupLeave(req, res, next) {
   }
 }
 
-export async function editGroupMembersByAdmin(req, res, next) {
+export async function editGroupDropMember(req, res, next) {
   try {
     const group = await adminRemoveMember(
       Number(req.params.groupID),
       req.user.id,
       Number(req.params.userID),
     );
-    if (group == undefined) {
+    if (group === undefined) {
       return res.status(200).json("Done");
     }
-    if (group == null) {
+    if (group === null) {
       return res.status(200).json("Group Not found");
     }
     if (group === "Not Admin") {
       return res
         .status(404)
         .json("You are not authorized to remove members from this Group");
+    }
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function editGroupAddMember(req, res, next) {
+  try {
+    const group = await adminAddMember(
+      Number(req.params.groupID),
+      req.user.id,
+      Number(req.params.userID),
+    );
+    if (group === null) {
+      return res.status(200).json("Group Not found");
+    }
+    if (group === undefined) {
+      return res.status(200).json("Done");
+    }
+    if (group === "Not Admin") {
+      return res
+        .status(404)
+        .json("You are not authorized to add members from this Group");
     }
   } catch (err) {
     return next(err);

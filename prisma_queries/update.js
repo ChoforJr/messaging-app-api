@@ -122,3 +122,32 @@ export async function adminRemoveMember(groupId, adminID, userId) {
     });
   });
 }
+
+export async function adminAddMember(groupId, adminID, userId) {
+  return await prisma.$transaction(async (tx) => {
+    const group1 = await tx.group.findUnique({
+      where: {
+        id: groupId,
+      },
+    });
+
+    if (!group1) {
+      return null;
+    }
+
+    if (group1.adminId !== adminID) {
+      return "Not Admin";
+    }
+
+    await tx.group.update({
+      where: {
+        id: groupId,
+      },
+      data: {
+        members: {
+          connect: { id: userId },
+        },
+      },
+    });
+  });
+}

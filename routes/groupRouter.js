@@ -5,7 +5,8 @@ import {
   editGroupAdmin,
   editGroupJoin,
   editGroupLeave,
-  editGroupMembersByAdmin,
+  editGroupDropMember,
+  editGroupAddMember,
 } from "../controllers/edit.js";
 import {
   validateGroupName,
@@ -33,10 +34,8 @@ groupRouter.post(
 
 groupRouter.patch("/join/:groupId", editGroupJoin);
 groupRouter.patch("/leave/:groupId", editGroupLeave);
-groupRouter.patch(
-  "/admin/remove/member/:groupID/:userID",
-  editGroupMembersByAdmin,
-);
+groupRouter.patch("/admin/add/member/:groupID/:userID", editGroupAddMember);
+groupRouter.patch("/admin/remove/member/:groupID/:userID", editGroupDropMember);
 
 groupRouter.patch(
   "/name/:groupId",
