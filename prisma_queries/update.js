@@ -67,3 +67,58 @@ export async function updateGroupAdmin(groupId, newAdminID) {
     },
   });
 }
+
+export async function joinGroup(groupId, userId) {
+  await prisma.group.update({
+    where: {
+      id: groupId,
+    },
+    data: {
+      members: {
+        connect: { id: userId },
+      },
+    },
+  });
+}
+
+export async function leaveGroup(groupId, userId) {
+  await prisma.group.update({
+    where: {
+      id: groupId,
+    },
+    data: {
+      members: {
+        disconnect: { id: userId },
+      },
+    },
+  });
+}
+
+export async function adminRemoveMember(groupId, adminID, userId) {
+  return await prisma.$transaction(async (tx) => {
+    const group1 = await tx.group.findUnique({
+      where: {
+        id: groupId,
+      },
+    });
+
+    if (!group1) {
+      return null;
+    }
+
+    if (group1.adminId !== adminID) {
+      return "Not Admin";
+    }
+
+    await tx.group.update({
+      where: {
+        id: groupId,
+      },
+      data: {
+        members: {
+          disconnect: { id: userId },
+        },
+      },
+    });
+  });
+}

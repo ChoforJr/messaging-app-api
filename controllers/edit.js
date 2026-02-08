@@ -5,6 +5,9 @@ import {
   updateBio,
   updateGroupInfo,
   updateGroupAdmin,
+  joinGroup,
+  leaveGroup,
+  adminRemoveMember,
 } from "../prisma_queries/update.js";
 import { findGroupByID } from "../prisma_queries/find.js";
 import { matchedData } from "express-validator";
@@ -102,6 +105,47 @@ export async function editGroupAdmin(req, res, next) {
     }
     await updateGroupAdmin(Number(req.params.groupId), Number(newAdminID));
     res.sendStatus(200);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function editGroupJoin(req, res, next) {
+  try {
+    await joinGroup(Number(req.params.groupId), Number(req.user.id));
+    res.sendStatus(200);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function editGroupLeave(req, res, next) {
+  try {
+    await leaveGroup(Number(req.params.groupId), Number(req.user.id));
+    res.sendStatus(200);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function editGroupMembersByAdmin(req, res, next) {
+  try {
+    const group = await adminRemoveMember(
+      Number(req.params.groupID),
+      req.user.id,
+      Number(req.params.userID),
+    );
+    if (group == undefined) {
+      return res.status(200).json("Done");
+    }
+    if (group == null) {
+      return res.status(200).json("Group Not found");
+    }
+    if (group === "Not Admin") {
+      return res
+        .status(404)
+        .json("You are not authorized to remove members from this Group");
+    }
   } catch (err) {
     return next(err);
   }
