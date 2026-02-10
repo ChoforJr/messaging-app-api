@@ -14,7 +14,11 @@ export async function findUserByID(userId) {
       id: true,
       username: true,
       createdAt: true,
-      profile: true,
+      profile: {
+        include: {
+          photo: true,
+        },
+      },
     },
   });
   return user;
@@ -27,6 +31,43 @@ export async function findProfileByUserID(userID) {
     },
   });
   return profile;
+}
+
+export async function findFollowings(userID) {
+  const profile = await prisma.profile.findUnique({
+    where: {
+      userId: userID,
+    },
+    select: {
+      following: {
+        include: {
+          photo: true,
+        },
+      },
+    },
+  });
+  return profile;
+}
+
+export async function findFriends(userID) {
+  const profiles = await prisma.profile.findMany({
+    where: {
+      AND: [
+        {
+          id: { not: userID },
+        },
+        {
+          followedBy: {
+            none: { id: userID },
+          },
+        },
+      ],
+    },
+    include: {
+      photo: true,
+    },
+  });
+  return profiles;
 }
 
 export async function findProfiles() {

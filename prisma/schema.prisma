@@ -24,15 +24,17 @@ model User {
 }
 
 model Profile {
-  id             Int      @id @default(autoincrement())
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         Int      @unique
+  id             Int       @id @default(autoincrement())
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int       @unique
   displayName    String
   bio            String?
-  photo          Files?   @relation("ProfilePhoto")
-  createdAt      DateTime @default(now())
-  joinedGroup    Group[]  @relation("UserJoinGroup")
-  adminForGroups Group[]  @relation("UserGroupAdmin")
+  photo          Files?    @relation("ProfilePhoto")
+  createdAt      DateTime  @default(now())
+  joinedGroup    Group[]   @relation("UserJoinGroup")
+  adminForGroups Group[]   @relation("UserGroupAdmin")
+  followedBy     Profile[] @relation("UserFollows")
+  following      Profile[] @relation("UserFollows")
 }
 
 model Message {

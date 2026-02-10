@@ -151,3 +151,35 @@ export async function adminAddMember(groupId, adminID, userId) {
     });
   });
 }
+
+export async function addConnect(userId, contactId) {
+  await prisma.profile.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      followedBy: {
+        connect: { id: contactId },
+      },
+      following: {
+        connect: { id: contactId },
+      },
+    },
+  });
+}
+
+export async function removeConnect(userId, contactId) {
+  await prisma.profile.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      followedBy: {
+        disconnect: { id: contactId },
+      },
+      following: {
+        disconnect: { id: contactId },
+      },
+    },
+  });
+}

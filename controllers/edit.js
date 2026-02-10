@@ -9,6 +9,8 @@ import {
   leaveGroup,
   adminRemoveMember,
   adminAddMember,
+  addConnect,
+  removeConnect,
 } from "../prisma_queries/update.js";
 import { findGroupByID } from "../prisma_queries/find.js";
 import { matchedData } from "express-validator";
@@ -170,6 +172,26 @@ export async function editGroupAddMember(req, res, next) {
         .status(404)
         .json("You are not authorized to add members from this Group");
     }
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function editConnect(req, res, next) {
+  try {
+    const { contactId } = matchedData(req);
+    await addConnect(Number(req.user.id), Number(contactId));
+    res.sendStatus(200);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function editDisconnect(req, res, next) {
+  try {
+    const { contactId } = matchedData(req);
+    await removeConnect(Number(req.user.id), Number(contactId));
+    res.sendStatus(200);
   } catch (err) {
     return next(err);
   }

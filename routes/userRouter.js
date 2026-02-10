@@ -1,10 +1,16 @@
-import { readUserByID, readProfiles } from "../controllers/read.js";
+import {
+  readUserByID,
+  readProfiles,
+  readFollowings,
+  exploreProfiles,
+} from "../controllers/read.js";
 import {
   editUserName,
   editDisplayName,
   editPassword,
   editBio,
 } from "../controllers/edit.js";
+import { editConnect, editDisconnect } from "../controllers/edit.js";
 import { removeUserSelf } from "../controllers/remove.js";
 import {
   validateUsernameRules,
@@ -12,6 +18,7 @@ import {
   validateDisplayNameRules,
   validateBioRules,
 } from "../validations/validationChanges/validateUser.js";
+import { validateContactIDRules } from "../validations/validationChanges/validateContact.js";
 import { checkValidationResult } from "../validations/checkValidationResult.js";
 import fileRouter from "./fileRouter.js";
 import { Router } from "express";
@@ -20,6 +27,21 @@ const userRouter = Router();
 
 userRouter.get("/self", readUserByID);
 userRouter.get("/profile/all", readProfiles);
+userRouter.get("/profile/followings", readFollowings);
+userRouter.get("/profile/explore", exploreProfiles);
+
+userRouter.patch(
+  "/profile/connect",
+  validateContactIDRules,
+  checkValidationResult,
+  editConnect,
+);
+userRouter.patch(
+  "/profile/disconnect",
+  validateContactIDRules,
+  checkValidationResult,
+  editDisconnect,
+);
 
 userRouter.patch(
   "/self/userName",

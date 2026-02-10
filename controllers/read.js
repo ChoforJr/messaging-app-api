@@ -9,6 +9,8 @@ import {
   findRecentMessagesToGroups,
   findMessagesToGroups,
   findAllNonMemberGroups,
+  findFollowings,
+  findFriends,
 } from "../prisma_queries/find.js";
 import { matchedData } from "express-validator";
 
@@ -35,6 +37,24 @@ export async function readProfileByUserId(req, res, next) {
       });
     }
     res.json(profile);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function readFollowings(req, res, next) {
+  try {
+    const followings = await findFollowings(req.user.id);
+    res.json(followings);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function exploreProfiles(req, res, next) {
+  try {
+    const profiles = await findFriends(req.user.id);
+    res.json(profiles);
   } catch (err) {
     return next(err);
   }
