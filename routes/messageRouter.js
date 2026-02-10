@@ -2,6 +2,7 @@ import {
   readMessagesToUser,
   readRecentMessagesToUser,
   readRecentMessagesToGroups,
+  readMessagesToGroups,
 } from "../controllers/read.js";
 import {
   validateText,
@@ -32,6 +33,7 @@ messageRouter.post(
 );
 
 messageRouter.get("/all", readMessagesToUser);
+messageRouter.get("/all/groups", readMessagesToGroups);
 messageRouter.get(
   "/recent",
   validateRecentDate,

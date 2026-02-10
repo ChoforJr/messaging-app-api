@@ -63,23 +63,23 @@ export async function findAllMemberGroups(userID) {
     include: {
       members: true,
       profilePhoto: true,
-      message: {
-        include: {
-          author: {
-            select: {
-              profile: true,
-            },
-          },
-          Files: {
-            orderBy: {
-              id: "desc",
-            },
-          },
-        },
-        orderBy: {
-          id: "desc",
+    },
+  });
+  return groups;
+}
+
+export async function findAllNonMemberGroups(userID) {
+  const groups = await prisma.group.findMany({
+    where: {
+      members: {
+        none: {
+          id: userID,
         },
       },
+    },
+    include: {
+      members: true,
+      profilePhoto: true,
     },
   });
   return groups;
@@ -106,14 +106,29 @@ export async function findMessagesToUser(userID) {
           id: "desc",
         },
       },
-      toUser: {
-        select: {
-          profile: true,
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+  return messages;
+}
+
+export async function findMessagesToGroups(userID) {
+  const messages = await prisma.message.findMany({
+    where: {
+      authorId: userID,
+      toUserId: null,
+    },
+    include: {
+      Files: {
+        orderBy: {
+          id: "desc",
         },
       },
     },
     orderBy: {
-      createdAt: "desc",
+      createdAt: "asc",
     },
   });
   return messages;
@@ -132,11 +147,6 @@ export async function findRecentMessagesToUser(userID, recentDate) {
       Files: {
         orderBy: {
           id: "desc",
-        },
-      },
-      toUser: {
-        select: {
-          profile: true,
         },
       },
     },

@@ -7,6 +7,8 @@ import {
   findMessagesToUser,
   findRecentMessagesToUser,
   findRecentMessagesToGroups,
+  findMessagesToGroups,
+  findAllNonMemberGroups,
 } from "../prisma_queries/find.js";
 import { matchedData } from "express-validator";
 
@@ -65,9 +67,27 @@ export async function readAllMemberGroup(req, res, next) {
   }
 }
 
+export async function readAllNonMemberGroup(req, res, next) {
+  try {
+    const exploreGroups = await findAllNonMemberGroups(req.user.id);
+    res.json(exploreGroups);
+  } catch (err) {
+    return next(err);
+  }
+}
+
 export async function readMessagesToUser(req, res, next) {
   try {
     const messages = await findMessagesToUser(req.user.id);
+    res.json(messages);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function readMessagesToGroups(req, res, next) {
+  try {
+    const messages = await findMessagesToGroups(req.user.id);
     res.json(messages);
   } catch (err) {
     return next(err);

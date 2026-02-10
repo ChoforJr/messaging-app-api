@@ -1,4 +1,8 @@
-import { readAllGroup, readAllMemberGroup } from "../controllers/read.js";
+import {
+  readAllGroup,
+  readAllMemberGroup,
+  readAllNonMemberGroup,
+} from "../controllers/read.js";
 import {
   editGroupName,
   editGroupDescription,
@@ -23,6 +27,7 @@ const groupRouter = Router();
 
 groupRouter.get("/all", readAllGroup);
 groupRouter.get("/memberOf", readAllMemberGroup);
+groupRouter.get("/explore", readAllNonMemberGroup);
 
 groupRouter.post(
   "/create",
