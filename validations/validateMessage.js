@@ -39,3 +39,13 @@ export const validateGroupID = [
       throw new Error("Group doesn't exist");
     }),
 ];
+
+export const validateRecentDate = [
+  body("recentDate")
+    .trim()
+    .notEmpty()
+    .withMessage("Recent Date is required")
+    .isISO8601()
+    .toDate()
+    .withMessage("Recent Date has to be a valid ISO8601 date"),
+];

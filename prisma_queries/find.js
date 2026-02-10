@@ -94,7 +94,7 @@ export async function findGroupByID(groupID) {
   return groups;
 }
 
-export async function findMessagesByUserID(userID) {
+export async function findMessagesToUser(userID) {
   const messages = await prisma.message.findMany({
     where: {
       OR: [{ authorId: userID }, { toUserId: userID }],
@@ -113,7 +113,58 @@ export async function findMessagesByUserID(userID) {
       },
     },
     orderBy: {
-      id: "asc",
+      createdAt: "desc",
+    },
+  });
+  return messages;
+}
+
+export async function findRecentMessagesToUser(userID, recentDate) {
+  const messages = await prisma.message.findMany({
+    where: {
+      OR: [{ authorId: userID }, { toUserId: userID }],
+      toGroupId: null,
+      createdAt: {
+        gt: recentDate,
+      },
+    },
+    include: {
+      Files: {
+        orderBy: {
+          id: "desc",
+        },
+      },
+      toUser: {
+        select: {
+          profile: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return messages;
+}
+
+export async function findRecentMessagesToGroups(userID, recentDate) {
+  const messages = await prisma.message.findMany({
+    where: {
+      authorId: userID,
+      toUserId: null,
+      createdAt: {
+        gt: recentDate,
+      },
+    },
+    include: {
+      Files: {
+        orderBy: {
+          id: "desc",
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
   return messages;

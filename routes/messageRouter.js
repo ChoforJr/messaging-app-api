@@ -1,8 +1,13 @@
-import { readMessagesByUserID } from "../controllers/read.js";
+import {
+  readMessagesToUser,
+  readRecentMessagesToUser,
+  readRecentMessagesToGroups,
+} from "../controllers/read.js";
 import {
   validateText,
   validateUserID,
   validateGroupID,
+  validateRecentDate,
 } from "../validations/validateMessage.js";
 import { checkValidationResult } from "../validations/checkValidationResult.js";
 import { addTextOnlyMessage } from "../controllers/add.js";
@@ -26,7 +31,19 @@ messageRouter.post(
   addTextOnlyMessage,
 );
 
-messageRouter.get("/self/involved", readMessagesByUserID);
+messageRouter.get("/all", readMessagesToUser);
+messageRouter.get(
+  "/recent",
+  validateRecentDate,
+  checkValidationResult,
+  readRecentMessagesToUser,
+);
+messageRouter.get(
+  "/recent/groups",
+  validateRecentDate,
+  checkValidationResult,
+  readRecentMessagesToGroups,
+);
 
 messageRouter.use("/image", fileRouter);
 

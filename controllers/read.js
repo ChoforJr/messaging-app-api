@@ -4,8 +4,11 @@ import {
   findProfiles,
   findAllGroups,
   findAllMemberGroups,
-  findMessagesByUserID,
+  findMessagesToUser,
+  findRecentMessagesToUser,
+  findRecentMessagesToGroups,
 } from "../prisma_queries/find.js";
+import { matchedData } from "express-validator";
 
 export async function readUserByID(req, res, next) {
   try {
@@ -62,9 +65,29 @@ export async function readAllMemberGroup(req, res, next) {
   }
 }
 
-export async function readMessagesByUserID(req, res, next) {
+export async function readMessagesToUser(req, res, next) {
   try {
-    const messages = await findMessagesByUserID(req.user.id);
+    const messages = await findMessagesToUser(req.user.id);
+    res.json(messages);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function readRecentMessagesToUser(req, res, next) {
+  try {
+    const { recentDate } = matchedData(req);
+    const messages = await findRecentMessagesToUser(req.user.id, recentDate);
+    res.json(messages);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function readRecentMessagesToGroups(req, res, next) {
+  try {
+    const { recentDate } = matchedData(req);
+    const messages = await findRecentMessagesToGroups(req.user.id, recentDate);
     res.json(messages);
   } catch (err) {
     return next(err);
