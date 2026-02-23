@@ -4,10 +4,15 @@ import {
   deleteGroupPhoto,
   deleteGroupByID,
 } from "../prisma_queries/delete.js";
+import { findProfileByUserID } from "../prisma_queries/find.js";
 import { v2 as cloudinary } from "cloudinary";
 
 export async function removeUserSelf(req, res, next) {
   try {
+    const checkGuest = await findProfileByUserID(req.user.id);
+    if (checkGuest.type === "guest") {
+      return res.status(404).json("Guests cannot be deleted");
+    }
     const file = await deleteUserByID(req.user.id);
     if (!file) {
       return res.sendStatus(200);
@@ -21,6 +26,10 @@ export async function removeUserSelf(req, res, next) {
 
 export async function removeProfilePhoto(req, res, next) {
   try {
+    const checkGuest = await findProfileByUserID(req.user.id);
+    if (checkGuest.type === "guest") {
+      return res.status(404).json("Guests Profile Photo cannot be deleted");
+    }
     const file = await deleteProfilePhoto(
       Number(req.params.fileID),
       req.user.id,

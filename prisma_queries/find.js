@@ -1,5 +1,15 @@
 import prisma from "../config/prisma.js";
 
+export async function findGuest() {
+  const profile = await prisma.profile.findMany({
+    where: { type: "guest" },
+    orderBy: {
+      id: "desc",
+    },
+  });
+  return profile;
+}
+
 export async function findUserByUsername(username) {
   const user = await prisma.user.findUnique({
     where: { username: username },

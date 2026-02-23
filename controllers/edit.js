@@ -12,12 +12,16 @@ import {
   addConnect,
   removeConnect,
 } from "../prisma_queries/update.js";
-import { findGroupByID } from "../prisma_queries/find.js";
+import { findGroupByID, findProfileByUserID } from "../prisma_queries/find.js";
 import { matchedData } from "express-validator";
 import { hash } from "bcryptjs";
 
 export async function editUserName(req, res, next) {
   try {
+    const checkGuest = await findProfileByUserID(req.user.id);
+    if (checkGuest.type === "guest") {
+      return res.status(404).json("Guests cannot be edited");
+    }
     const { newUsername } = matchedData(req);
     const usernameLowerCase = newUsername.toLowerCase();
     await updateUsername(req.user.id, usernameLowerCase);
@@ -29,6 +33,10 @@ export async function editUserName(req, res, next) {
 
 export async function editPassword(req, res, next) {
   try {
+    const checkGuest = await findProfileByUserID(req.user.id);
+    if (checkGuest.type === "guest") {
+      return res.status(404).json("Guests cannot be edited");
+    }
     const { newPassword } = matchedData(req);
     const hashedPassword = await hash(newPassword, 10);
     await updatePassword(req.user.id, hashedPassword);
@@ -40,6 +48,10 @@ export async function editPassword(req, res, next) {
 
 export async function editDisplayName(req, res, next) {
   try {
+    const checkGuest = await findProfileByUserID(req.user.id);
+    if (checkGuest.type === "guest") {
+      return res.status(404).json("Guests cannot be edited");
+    }
     const { newDisplayName } = matchedData(req);
     await updateDisplayName(req.user.id, newDisplayName);
     res.sendStatus(200);
@@ -50,6 +62,10 @@ export async function editDisplayName(req, res, next) {
 
 export async function editBio(req, res, next) {
   try {
+    const checkGuest = await findProfileByUserID(req.user.id);
+    if (checkGuest.type === "guest") {
+      return res.status(404).json("Guests cannot be edited");
+    }
     const { newBio } = matchedData(req);
     await updateBio(req.user.id, newBio);
     res.sendStatus(200);

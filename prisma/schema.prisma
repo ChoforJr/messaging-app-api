@@ -35,6 +35,7 @@ model Profile {
   adminForGroups Group[]   @relation("UserGroupAdmin")
   followedBy     Profile[] @relation("UserFollows")
   following      Profile[] @relation("UserFollows")
+  type           String    @default("regular") // "regular" or "guest"    
 }
 
 model Message {
