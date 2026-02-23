@@ -107,7 +107,7 @@ export async function readMessagesToUser(req, res, next) {
 
 export async function readMessagesToGroups(req, res, next) {
   try {
-    const messages = await findMessagesToGroups(req.user.id);
+    const messages = await findMessagesToGroups(req.user.profileID);
     res.json(messages);
   } catch (err) {
     return next(err);
@@ -127,7 +127,10 @@ export async function readRecentMessagesToUser(req, res, next) {
 export async function readRecentMessagesToGroups(req, res, next) {
   try {
     const { recentDate } = matchedData(req);
-    const messages = await findRecentMessagesToGroups(req.user.id, recentDate);
+    const messages = await findRecentMessagesToGroups(
+      req.user.profileID,
+      recentDate,
+    );
     res.json(messages);
   } catch (err) {
     return next(err);
