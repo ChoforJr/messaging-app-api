@@ -68,27 +68,27 @@ export async function updateGroupAdmin(groupId, newAdminID) {
   });
 }
 
-export async function joinGroup(groupId, userId) {
+export async function joinGroup(groupId, profileID) {
   await prisma.group.update({
     where: {
       id: groupId,
     },
     data: {
       members: {
-        connect: { id: userId },
+        connect: { id: profileID },
       },
     },
   });
 }
 
-export async function leaveGroup(groupId, userId) {
+export async function leaveGroup(groupId, profileID) {
   await prisma.group.update({
     where: {
       id: groupId,
     },
     data: {
       members: {
-        disconnect: { id: userId },
+        disconnect: { id: profileID },
       },
     },
   });
@@ -152,10 +152,10 @@ export async function adminAddMember(groupId, adminID, userId) {
   });
 }
 
-export async function addConnect(userId, contactId) {
+export async function addConnect(profileID, contactId) {
   await prisma.profile.update({
     where: {
-      id: userId,
+      id: profileID,
     },
     data: {
       followedBy: {
@@ -168,10 +168,10 @@ export async function addConnect(userId, contactId) {
   });
 }
 
-export async function removeConnect(userId, contactId) {
+export async function removeConnect(profileID, contactId) {
   await prisma.profile.update({
     where: {
-      id: userId,
+      id: profileID,
     },
     data: {
       followedBy: {

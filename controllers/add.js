@@ -140,7 +140,7 @@ export async function addProfilePhoto(req, res, next) {
         mimeType: file.mimetype,
         size: file.size,
         url: file.path,
-        ProfileId: Number(req.user.id),
+        ProfileId: Number(req.user.profileID),
       });
     });
     await insertFiles(data);
@@ -176,7 +176,7 @@ export async function addGroup(req, res, next) {
   try {
     const { name, description } = matchedData(req);
 
-    const newGroup = await createGroup(req.user.id, name, description);
+    const newGroup = await createGroup(req.user.profileID, name, description);
     res.status(200).json(newGroup);
   } catch (err) {
     return next(err);
@@ -192,7 +192,7 @@ export async function addGroupPhoto(req, res, next) {
     if (!group) {
       return res.status(404).json("Group Not found.");
     }
-    if (group.adminId !== req.user.id) {
+    if (group.adminId !== req.user.profileID) {
       return res.status(404).json("You are not authorized to do this.");
     }
     const data = [];

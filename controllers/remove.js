@@ -32,7 +32,7 @@ export async function removeProfilePhoto(req, res, next) {
     }
     const file = await deleteProfilePhoto(
       Number(req.params.fileID),
-      req.user.id,
+      req.user.profileID,
     );
     if (!file) {
       return res.status(404).json("File not found");
@@ -50,7 +50,10 @@ export async function removeProfilePhoto(req, res, next) {
 
 export async function removeGroupPhoto(req, res, next) {
   try {
-    const file = await deleteGroupPhoto(Number(req.params.fileID), req.user.id);
+    const file = await deleteGroupPhoto(
+      Number(req.params.fileID),
+      req.user.profileID,
+    );
     if (!file) {
       return res.status(404).json("File not found");
     }
@@ -67,7 +70,10 @@ export async function removeGroupPhoto(req, res, next) {
 
 export async function removeGroup(req, res, next) {
   try {
-    const file = await deleteGroupByID(Number(req.params.groupID), req.user.id);
+    const file = await deleteGroupByID(
+      Number(req.params.groupID),
+      req.user.profileID,
+    );
     if (!file) {
       return res.status(200).json("Done");
     }

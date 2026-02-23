@@ -16,7 +16,7 @@ export async function deleteUserByID(userID) {
   });
 }
 
-export async function deleteProfilePhoto(fileID, userID) {
+export async function deleteProfilePhoto(fileID, profileID) {
   return await prisma.$transaction(async (tx) => {
     const file = await tx.files.findUnique({
       where: { id: fileID },
@@ -26,7 +26,7 @@ export async function deleteProfilePhoto(fileID, userID) {
       return null;
     }
 
-    if (file.ProfileId !== userID) {
+    if (file.ProfileId !== profileID) {
       return "wrong user";
     }
 
@@ -40,7 +40,7 @@ export async function deleteProfilePhoto(fileID, userID) {
   });
 }
 
-export async function deleteGroupPhoto(fileID, userID) {
+export async function deleteGroupPhoto(fileID, profileID) {
   return await prisma.$transaction(async (tx) => {
     const file = await tx.files.findUnique({
       where: { id: fileID },
@@ -53,7 +53,7 @@ export async function deleteGroupPhoto(fileID, userID) {
     const group = await tx.group.findUnique({
       where: {
         id: file.groupId,
-        adminId: userID,
+        adminId: profileID,
       },
     });
     if (!group) {
@@ -70,7 +70,7 @@ export async function deleteGroupPhoto(fileID, userID) {
   });
 }
 
-export async function deleteGroupByID(groupID, userID) {
+export async function deleteGroupByID(groupID, profileID) {
   return await prisma.$transaction(async (tx) => {
     const group = await tx.group.findUnique({
       where: {
@@ -80,7 +80,7 @@ export async function deleteGroupByID(groupID, userID) {
     if (!group) {
       return null;
     }
-    if (group.adminId !== userID) {
+    if (group.adminId !== profileID) {
       return "Not Admin";
     }
 

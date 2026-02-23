@@ -53,7 +53,7 @@ export async function readFollowings(req, res, next) {
 
 export async function exploreProfiles(req, res, next) {
   try {
-    const profiles = await findFriends(req.user.id);
+    const profiles = await findFriends(req.user.profileID);
     res.json(profiles);
   } catch (err) {
     return next(err);
@@ -80,7 +80,7 @@ export async function readAllGroup(req, res, next) {
 
 export async function readAllMemberGroup(req, res, next) {
   try {
-    const groups = await findAllMemberGroups(req.user.id);
+    const groups = await findAllMemberGroups(req.user.profileID);
     res.json(groups);
   } catch (err) {
     return next(err);
@@ -89,7 +89,7 @@ export async function readAllMemberGroup(req, res, next) {
 
 export async function readAllNonMemberGroup(req, res, next) {
   try {
-    const exploreGroups = await findAllNonMemberGroups(req.user.id);
+    const exploreGroups = await findAllNonMemberGroups(req.user.profileID);
     res.json(exploreGroups);
   } catch (err) {
     return next(err);

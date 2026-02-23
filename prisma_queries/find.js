@@ -13,6 +13,9 @@ export async function findGuest() {
 export async function findUserByUsername(username) {
   const user = await prisma.user.findUnique({
     where: { username: username },
+    include: {
+      profile: true,
+    },
   });
   return user;
 }
@@ -59,16 +62,16 @@ export async function findFollowings(userID) {
   return profile;
 }
 
-export async function findFriends(userID) {
+export async function findFriends(profileID) {
   const profiles = await prisma.profile.findMany({
     where: {
       AND: [
         {
-          id: { not: userID },
+          id: { not: profileID },
         },
         {
           followedBy: {
-            none: { id: userID },
+            none: { id: profileID },
           },
         },
       ],
@@ -102,12 +105,12 @@ export async function findAllGroups() {
   return groups;
 }
 
-export async function findAllMemberGroups(userID) {
+export async function findAllMemberGroups(profileID) {
   const groups = await prisma.group.findMany({
     where: {
       members: {
         some: {
-          id: userID,
+          id: profileID,
         },
       },
     },
@@ -119,12 +122,12 @@ export async function findAllMemberGroups(userID) {
   return groups;
 }
 
-export async function findAllNonMemberGroups(userID) {
+export async function findAllNonMemberGroups(profileID) {
   const groups = await prisma.group.findMany({
     where: {
       members: {
         none: {
-          id: userID,
+          id: profileID,
         },
       },
     },
