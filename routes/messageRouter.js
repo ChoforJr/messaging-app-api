@@ -34,13 +34,13 @@ messageRouter.post(
 
 messageRouter.get("/all", readMessagesToUser);
 messageRouter.get("/all/groups", readMessagesToGroups);
-messageRouter.get(
+messageRouter.post(
   "/recent",
   validateRecentDate,
   checkValidationResult,
   readRecentMessagesToUser,
 );
-messageRouter.get(
+messageRouter.post(
   "/recent/groups",
   validateRecentDate,
   checkValidationResult,

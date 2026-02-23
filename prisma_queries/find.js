@@ -158,8 +158,10 @@ export async function findMessagesToUser(userID) {
 export async function findMessagesToGroups(userID) {
   const messages = await prisma.message.findMany({
     where: {
-      authorId: userID,
       toUserId: null,
+      toGroupId: {
+        in: (await findAllMemberGroups(userID)).map((group) => group.id),
+      },
     },
     include: {
       Files: {
@@ -201,8 +203,10 @@ export async function findRecentMessagesToUser(userID, recentDate) {
 export async function findRecentMessagesToGroups(userID, recentDate) {
   const messages = await prisma.message.findMany({
     where: {
-      authorId: userID,
       toUserId: null,
+      toGroupId: {
+        in: (await findAllMemberGroups(userID)).map((group) => group.id),
+      },
       createdAt: {
         gt: recentDate,
       },
