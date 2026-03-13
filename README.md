@@ -11,8 +11,6 @@ A robust backend service for a messaging application that enables users to commu
 - [Environment Variables](#environment-variables)
 - [Running the Project](#running-the-project)
 - [Project Structure](#project-structure)
-- [API Endpoints](#api-endpoints)
-- [Database Schema](#database-schema)
 - [Troubleshooting](#troubleshooting)
 - [Author](#author)
 - [Related Projects](#related-projects)
@@ -167,55 +165,6 @@ messaging-app-api/
 ├── app.js              # Express app initialization
 └── package.json        # Project dependencies
 ```
-
-## 🔌 API Endpoints
-
-### Authentication
-
-- `POST /auth/signup` - Register a new user
-- `POST /auth/login` - Login user
-- `POST /auth/logout` - Logout user
-
-### Users
-
-- `GET /users` - Get all users
-- `GET /users/:id` - Get user profile
-- `PUT /users/:id` - Update user profile
-- `POST /users/:id/follow` - Follow a user
-- `DELETE /users/:id/follow` - Unfollow a user
-
-### Messages
-
-- `POST /messages` - Send a message
-- `GET /messages/:id` - Get message thread
-- `PUT /messages/:id` - Edit message
-- `DELETE /messages/:id` - Delete message
-
-### Groups
-
-- `POST /groups` - Create a group
-- `GET /groups` - Get all groups
-- `GET /groups/:id` - Get group details
-- `PUT /groups/:id` - Update group
-- `DELETE /groups/:id` - Delete group
-- `POST /groups/:id/members` - Add member to group
-
-### Files
-
-- `POST /files/upload` - Upload a file
-- `DELETE /files/:id` - Delete a file
-
-## 💾 Database Schema
-
-The application uses the following main models:
-
-- **User** - User accounts with authentication credentials
-- **Profile** - User profile information with photos and bios
-- **Message** - Direct and group messages
-- **Group** - Group chat containers with members and admins
-- **Files** - File records for messages, profiles, and groups
-
-See `prisma/schema.prisma` for the complete schema definition.
 
 ## 🐛 Troubleshooting
 
