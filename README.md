@@ -2,6 +2,10 @@
 
 A robust backend service for a messaging application that enables users to communicate with each other through direct messages and group chats. Built with Node.js and Express, featuring authentication, file uploads, and user management.
 
+## 🔗 Related Projects
+
+- **[Messaging App Client](https://github.com/ChoforJr/messaging-app)** - Frontend repository for this API
+
 ## 📋 Table of Contents
 
 - [Features](#features)
@@ -208,7 +212,3 @@ npm run prismaGen
 
 - [GitHub](https://github.com/ChoforJr)
 - [LinkedIn](https://www.linkedin.com/in/choforforsakang/)
-
-## 🔗 Related Projects
-
-- **[Messaging App Client](https://github.com/ChoforJr/messaging-app)** - Frontend repository for this API
