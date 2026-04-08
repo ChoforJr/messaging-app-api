@@ -194,6 +194,14 @@ Regenerate the Prisma client:
 npm run prismaGen
 ```
 
+## Roadmap / Future Enhancements
+
+- **WebSocket Integration**: "Transitioning from RESTful polling to bidirectional communication using Socket.io for instant message delivery and live notifications."
+
+- **Real-time Presence**: "Implementing user 'Online/Offline' status indicators via socket connection tracking."
+
+- **Add Typescript**: "This allows me to define the "shape" of incoming and outgoing data, helping catch errors during development rather than at runtime when users encounter them"
+
 ## 👤 Author
 
 **Forsakang Chofor Junior**
