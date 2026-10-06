@@ -130,7 +130,9 @@ npm run prisma:migrate:deploy
 npm start
 ```
 
-Build generates the Prisma client, compiles TypeScript into `dist/`, and copies the runtime assets. Apply committed migrations separately during deployment with `prisma:migrate:deploy`; do not run `prisma migrate dev` against production.
+Build generates the Prisma client, compiles TypeScript into `dist/`, and copies the runtime assets. Apply committed migrations separately during deployment with `npm run prisma:migrate:deploy`; do not run `prisma migrate dev` against production. The legacy `npm run prismaMg` command remains as a compatibility alias for `prisma migrate deploy` for existing Render service settings.
+
+For Render, set the service root directory to `messaging-app-api` (or the API repository root), build command to `npm ci --include=dev && npm run build`, pre-deploy command to `npm run prisma:migrate:deploy`, and start command to `npm start`. If the existing build command still invokes `npm run prismaMg`, it will work as a compatibility alias, but move migrations to Render's pre-deploy command so they run only after a successful build.
 
 ### Database Commands
 
