@@ -6,14 +6,18 @@ import {
 } from "../prisma_queries/delete.js";
 import { findProfileByUserID } from "../prisma_queries/find.js";
 import { v2 as cloudinary } from "cloudinary";
+import type { NextFunction, Request, Response } from "express";
 
-export async function removeUserSelf(req, res, next) {
+export async function removeUserSelf(req: Request, res: Response, next: NextFunction) {
   try {
-    const checkGuest = await findProfileByUserID(req.user.id);
+    const checkGuest = await findProfileByUserID(req.user!.id);
+    if (!checkGuest) {
+      return res.status(404).json("Profile not found");
+    }
     if (checkGuest.type === "guest") {
       return res.status(404).json("Guests cannot be deleted");
     }
-    const file = await deleteUserByID(req.user.id);
+    const file = await deleteUserByID(req.user!.id);
     if (!file) {
       return res.sendStatus(200);
     }
@@ -24,15 +28,18 @@ export async function removeUserSelf(req, res, next) {
   }
 }
 
-export async function removeProfilePhoto(req, res, next) {
+export async function removeProfilePhoto(req: Request, res: Response, next: NextFunction) {
   try {
-    const checkGuest = await findProfileByUserID(req.user.id);
+    const checkGuest = await findProfileByUserID(req.user!.id);
+    if (!checkGuest) {
+      return res.status(404).json("Profile not found");
+    }
     if (checkGuest.type === "guest") {
       return res.status(404).json("Guests Profile Photo cannot be deleted");
     }
     const file = await deleteProfilePhoto(
       Number(req.params.fileID),
-      req.user.profileID,
+      req.user!.profileID,
     );
     if (!file) {
       return res.status(404).json("File not found");
@@ -48,11 +55,11 @@ export async function removeProfilePhoto(req, res, next) {
   }
 }
 
-export async function removeGroupPhoto(req, res, next) {
+export async function removeGroupPhoto(req: Request, res: Response, next: NextFunction) {
   try {
     const file = await deleteGroupPhoto(
       Number(req.params.fileID),
-      req.user.profileID,
+      req.user!.profileID,
     );
     if (!file) {
       return res.status(404).json("File not found");
@@ -68,11 +75,11 @@ export async function removeGroupPhoto(req, res, next) {
   }
 }
 
-export async function removeGroup(req, res, next) {
+export async function removeGroup(req: Request, res: Response, next: NextFunction) {
   try {
     const file = await deleteGroupByID(
       Number(req.params.groupID),
-      req.user.profileID,
+      req.user!.profileID,
     );
     if (!file) {
       return res.status(200).json("Done");

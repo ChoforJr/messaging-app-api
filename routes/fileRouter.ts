@@ -4,13 +4,18 @@ import multer from "multer";
 import { addProfilePhoto, addGroupPhoto } from "../controllers/add.js";
 import { removeProfilePhoto, removeGroupPhoto } from "../controllers/remove.js";
 import { cloudStorage } from "../config/cloudinary.js";
+import type { ErrorRequestHandler } from "express";
 
 const allowedMimeTypes = ["image/jpeg", "image/png"];
-const fileFilter = (req, file, cb) => {
+const fileFilter: NonNullable<multer.Options["fileFilter"]> = (
+  req,
+  file,
+  cb,
+) => {
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Invalid file type. Only JPG and PNG are allowed."), false);
+    cb(new Error("Invalid file type. Only JPG and PNG are allowed."));
   }
 };
 
@@ -48,7 +53,7 @@ fileRouter.post(
   addImageOnlyMessage,
 );
 
-fileRouter.use((err, req, res, next) => {
+const uploadErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   console.error(err.stack);
 
   if (err instanceof multer.MulterError) {
@@ -67,6 +72,8 @@ fileRouter.use((err, req, res, next) => {
   }
 
   res.status(500).json({ error: "Something went wrong on the server." });
-});
+};
+
+fileRouter.use(uploadErrorHandler);
 
 export default fileRouter;

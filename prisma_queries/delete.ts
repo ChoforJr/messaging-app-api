@@ -1,6 +1,6 @@
 import prisma from "../config/prisma.js";
 
-export async function deleteUserByID(userID) {
+export async function deleteUserByID(userID: number) {
   return await prisma.$transaction(async (tx) => {
     const file = await tx.files.findUnique({
       where: { ProfileId: userID },
@@ -16,7 +16,7 @@ export async function deleteUserByID(userID) {
   });
 }
 
-export async function deleteProfilePhoto(fileID, profileID) {
+export async function deleteProfilePhoto(fileID: number, profileID: number) {
   return await prisma.$transaction(async (tx) => {
     const file = await tx.files.findUnique({
       where: { id: fileID },
@@ -40,7 +40,7 @@ export async function deleteProfilePhoto(fileID, profileID) {
   });
 }
 
-export async function deleteGroupPhoto(fileID, profileID) {
+export async function deleteGroupPhoto(fileID: number, profileID: number) {
   return await prisma.$transaction(async (tx) => {
     const file = await tx.files.findUnique({
       where: { id: fileID },
@@ -48,6 +48,10 @@ export async function deleteGroupPhoto(fileID, profileID) {
 
     if (!file) {
       return null;
+    }
+
+    if (file.groupId === null) {
+      return "Not Admin";
     }
 
     const group = await tx.group.findUnique({
@@ -70,7 +74,7 @@ export async function deleteGroupPhoto(fileID, profileID) {
   });
 }
 
-export async function deleteGroupByID(groupID, profileID) {
+export async function deleteGroupByID(groupID: number, profileID: number) {
   return await prisma.$transaction(async (tx) => {
     const group = await tx.group.findUnique({
       where: {

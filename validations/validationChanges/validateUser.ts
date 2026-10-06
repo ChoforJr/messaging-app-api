@@ -26,7 +26,7 @@ export const validatePasswordRules = [
     .isLength({ min: 4, max: 32 })
     .withMessage("currentPassword: Has to have a length of between 4 and 32")
     .custom(async (value, { req }) => {
-      const user = await findUserByUsername(req.user.username);
+      const user = await findUserByUsername(req.user!.username);
       if (!user) {
         throw new Error("Incorrect username");
       }

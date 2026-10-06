@@ -15,73 +15,86 @@ import {
 import { findGroupByID, findProfileByUserID } from "../prisma_queries/find.js";
 import { matchedData } from "express-validator";
 import { hash } from "bcryptjs";
+import type { NextFunction, Request, Response } from "express";
 
-export async function editUserName(req, res, next) {
+export async function editUserName(req: Request, res: Response, next: NextFunction) {
   try {
-    const checkGuest = await findProfileByUserID(req.user.id);
+    const checkGuest = await findProfileByUserID(req.user!.id);
+    if (!checkGuest) {
+      return res.status(404).json("Profile not found");
+    }
     if (checkGuest.type === "guest") {
       return res.status(404).json("Guests cannot be edited");
     }
     const { newUsername } = matchedData(req);
     const usernameLowerCase = newUsername.toLowerCase();
-    await updateUsername(req.user.id, usernameLowerCase);
+    await updateUsername(req.user!.id, usernameLowerCase);
     res.sendStatus(200);
   } catch (err) {
     return next(err);
   }
 }
 
-export async function editPassword(req, res, next) {
+export async function editPassword(req: Request, res: Response, next: NextFunction) {
   try {
-    const checkGuest = await findProfileByUserID(req.user.id);
+    const checkGuest = await findProfileByUserID(req.user!.id);
+    if (!checkGuest) {
+      return res.status(404).json("Profile not found");
+    }
     if (checkGuest.type === "guest") {
       return res.status(404).json("Guests cannot be edited");
     }
     const { newPassword } = matchedData(req);
     const hashedPassword = await hash(newPassword, 10);
-    await updatePassword(req.user.id, hashedPassword);
+    await updatePassword(req.user!.id, hashedPassword);
     res.sendStatus(200);
   } catch (err) {
     return next(err);
   }
 }
 
-export async function editDisplayName(req, res, next) {
+export async function editDisplayName(req: Request, res: Response, next: NextFunction) {
   try {
-    const checkGuest = await findProfileByUserID(req.user.id);
+    const checkGuest = await findProfileByUserID(req.user!.id);
+    if (!checkGuest) {
+      return res.status(404).json("Profile not found");
+    }
     if (checkGuest.type === "guest") {
       return res.status(404).json("Guests cannot be edited");
     }
     const { newDisplayName } = matchedData(req);
-    await updateDisplayName(req.user.id, newDisplayName);
+    await updateDisplayName(req.user!.id, newDisplayName);
     res.sendStatus(200);
   } catch (err) {
     return next(err);
   }
 }
 
-export async function editBio(req, res, next) {
+export async function editBio(req: Request, res: Response, next: NextFunction) {
   try {
-    const checkGuest = await findProfileByUserID(req.user.id);
+    const checkGuest = await findProfileByUserID(req.user!.id);
+    if (!checkGuest) {
+      return res.status(404).json("Profile not found");
+    }
     if (checkGuest.type === "guest") {
       return res.status(404).json("Guests cannot be edited");
     }
     const { newBio } = matchedData(req);
-    await updateBio(req.user.id, newBio);
+    await updateBio(req.user!.id, newBio);
     res.sendStatus(200);
   } catch (err) {
     return next(err);
   }
 }
 
-export async function editGroupName(req, res, next) {
+export async function editGroupName(req: Request, res: Response, next: NextFunction) {
   try {
     const { name } = matchedData(req);
     const group = await findGroupByID(Number(req.params.groupId));
     if (!group) {
       return res.status(404).json("Group Not found.");
     }
-    if (group.adminId !== req.user.profileID) {
+    if (group.adminId !== req.user!.profileID) {
       return res.status(404).json("You are not authorized to do this.");
     }
     await updateGroupInfo(Number(req.params.groupId), "name", name);
@@ -91,14 +104,14 @@ export async function editGroupName(req, res, next) {
   }
 }
 
-export async function editGroupDescription(req, res, next) {
+export async function editGroupDescription(req: Request, res: Response, next: NextFunction) {
   try {
     const { description } = matchedData(req);
     const group = await findGroupByID(Number(req.params.groupId));
     if (!group) {
       return res.status(404).json("Group Not found.");
     }
-    if (group.adminId !== req.user.profileID) {
+    if (group.adminId !== req.user!.profileID) {
       return res.status(404).json("You are not authorized to do this.");
     }
     await updateGroupInfo(
@@ -112,14 +125,14 @@ export async function editGroupDescription(req, res, next) {
   }
 }
 
-export async function editGroupAdmin(req, res, next) {
+export async function editGroupAdmin(req: Request, res: Response, next: NextFunction) {
   try {
     const { newAdminID } = matchedData(req);
     const group = await findGroupByID(Number(req.params.groupId));
     if (!group) {
       return res.status(404).json("Group Not found.");
     }
-    if (group.adminId !== req.user.profileID) {
+    if (group.adminId !== req.user!.profileID) {
       return res.status(404).json("You are not authorized to do this.");
     }
     await updateGroupAdmin(Number(req.params.groupId), Number(newAdminID));
@@ -129,29 +142,29 @@ export async function editGroupAdmin(req, res, next) {
   }
 }
 
-export async function editGroupJoin(req, res, next) {
+export async function editGroupJoin(req: Request, res: Response, next: NextFunction) {
   try {
-    await joinGroup(Number(req.params.groupId), Number(req.user.profileID));
+    await joinGroup(Number(req.params.groupId), Number(req.user!.profileID));
     res.sendStatus(200);
   } catch (err) {
     return next(err);
   }
 }
 
-export async function editGroupLeave(req, res, next) {
+export async function editGroupLeave(req: Request, res: Response, next: NextFunction) {
   try {
-    await leaveGroup(Number(req.params.groupId), Number(req.user.profileID));
+    await leaveGroup(Number(req.params.groupId), Number(req.user!.profileID));
     res.sendStatus(200);
   } catch (err) {
     return next(err);
   }
 }
 
-export async function editGroupDropMember(req, res, next) {
+export async function editGroupDropMember(req: Request, res: Response, next: NextFunction) {
   try {
     const group = await adminRemoveMember(
       Number(req.params.groupID),
-      req.user.profileID,
+      req.user!.profileID,
       Number(req.params.userID),
     );
     if (group === undefined) {
@@ -170,11 +183,11 @@ export async function editGroupDropMember(req, res, next) {
   }
 }
 
-export async function editGroupAddMember(req, res, next) {
+export async function editGroupAddMember(req: Request, res: Response, next: NextFunction) {
   try {
     const group = await adminAddMember(
       Number(req.params.groupID),
-      req.user.profileID,
+      req.user!.profileID,
       Number(req.params.userID),
     );
     if (group === null) {
@@ -193,20 +206,20 @@ export async function editGroupAddMember(req, res, next) {
   }
 }
 
-export async function editConnect(req, res, next) {
+export async function editConnect(req: Request, res: Response, next: NextFunction) {
   try {
     const { contactId } = matchedData(req);
-    await addConnect(Number(req.user.profileID), Number(contactId));
+    await addConnect(Number(req.user!.profileID), Number(contactId));
     res.sendStatus(200);
   } catch (err) {
     return next(err);
   }
 }
 
-export async function editDisconnect(req, res, next) {
+export async function editDisconnect(req: Request, res: Response, next: NextFunction) {
   try {
     const { contactId } = matchedData(req);
-    await removeConnect(Number(req.user.profileID), Number(contactId));
+    await removeConnect(Number(req.user!.profileID), Number(contactId));
     res.sendStatus(200);
   } catch (err) {
     return next(err);

@@ -3,9 +3,9 @@ import passport from "passport";
 import { authLogin } from "../config/passport.js";
 
 import { addNewUser } from "../controllers/add.js";
-import { validateSignUpRules } from "..//validations/validateSignUp.js";
+import { validateSignUpRules } from "../validations/validateSignUp.js";
 import { checkValidationResult } from "../validations/checkValidationResult.js";
-import { validateLogInRules } from "..//validations/validateLogIn.js";
+import { validateLogInRules } from "../validations/validateLogIn.js";
 import indexRouter from "./indexRouter.js";
 
 const authRouter = Router();

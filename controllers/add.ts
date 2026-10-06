@@ -17,6 +17,9 @@ import {
 } from "../prisma_queries/create.js";
 import { matchedData } from "express-validator";
 import { hash } from "bcryptjs";
+import type { NextFunction, Request, Response } from "express";
+import type { Prisma } from "../generated/prisma/client.js";
+import { publishNewMessage } from "../config/socket.js";
 
 async function addGuest() {
   const guestInfo = [
@@ -115,7 +118,11 @@ async function addOtherUsers() {
 }
 addOtherUsers();
 
-export async function addNewUser(req, res, next) {
+export async function addNewUser(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const { username, password, displayName } = matchedData(req);
     const hashedPassword = await hash(password, 10);
@@ -127,12 +134,16 @@ export async function addNewUser(req, res, next) {
   }
 }
 
-export async function addProfilePhoto(req, res, next) {
+export async function addProfilePhoto(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
-    if (!req.files || req.files.length === 0) {
+    if (!Array.isArray(req.files) || req.files.length === 0) {
       return next(new Error("File upload failed, no files object found."));
     }
-    const data = [];
+    const data: Prisma.FilesCreateManyInput[] = [];
     req.files.forEach((file) => {
       data.push({
         originalName: file.originalname,
@@ -140,7 +151,7 @@ export async function addProfilePhoto(req, res, next) {
         mimeType: file.mimetype,
         size: file.size,
         url: file.path,
-        ProfileId: Number(req.user.profileID),
+        ProfileId: Number(req.user!.profileID),
       });
     });
     await insertFiles(data);
@@ -150,7 +161,11 @@ export async function addProfilePhoto(req, res, next) {
   }
 }
 
-export async function addTextOnlyMessage(req, res, next) {
+export async function addTextOnlyMessage(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const { content, toUserID, toGroupID } = matchedData(req);
     let userRecepient = toUserID ? Number(toUserID) : null;
@@ -161,41 +176,52 @@ export async function addTextOnlyMessage(req, res, next) {
         .json("Message must have a recipient (User or Group");
     }
     const message = await createTextOnlyMessage(
-      req.user.id,
+      req.user!.id,
       content,
       userRecepient,
       groupRecepient,
     );
+    void publishNewMessage(message).catch((error: unknown) => {
+      console.error("Could not publish new message over websocket:", error);
+    });
     res.status(200).json(message);
   } catch (err) {
     return next(err);
   }
 }
 
-export async function addGroup(req, res, next) {
+export async function addGroup(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const { name, description } = matchedData(req);
 
-    const newGroup = await createGroup(req.user.profileID, name, description);
+    const newGroup = await createGroup(req.user!.profileID, name, description);
     res.status(200).json(newGroup);
   } catch (err) {
     return next(err);
   }
 }
 
-export async function addGroupPhoto(req, res, next) {
+export async function addGroupPhoto(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
-    if (!req.files || req.files.length === 0) {
+    if (!Array.isArray(req.files) || req.files.length === 0) {
       return res.status(404).json("File upload failed, no files object found.");
     }
     const group = await findGroupByID(Number(req.params.groupId));
     if (!group) {
       return res.status(404).json("Group Not found.");
     }
-    if (group.adminId !== req.user.profileID) {
+    if (group.adminId !== req.user!.profileID) {
       return res.status(404).json("You are not authorized to do this.");
     }
-    const data = [];
+    const data: Prisma.FilesCreateManyInput[] = [];
     req.files.forEach((file) => {
       data.push({
         originalName: file.originalname,
@@ -213,9 +239,13 @@ export async function addGroupPhoto(req, res, next) {
   }
 }
 
-export async function addImageOnlyMessage(req, res, next) {
+export async function addImageOnlyMessage(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
-    if (!req.files || req.files.length === 0) {
+    if (!Array.isArray(req.files) || req.files.length === 0) {
       return res.status(404).json("File upload failed, no files object found.");
     }
     const toUserID = req.params.userID ? Number(req.params.userID) : null;
@@ -226,7 +256,7 @@ export async function addImageOnlyMessage(req, res, next) {
         .status(400)
         .json("Message must have a recipient (User or Group).");
     }
-    const data = [];
+    const data: Prisma.FilesCreateManyInput[] = [];
     req.files.forEach((file) => {
       data.push({
         originalName: file.originalname,
@@ -237,11 +267,14 @@ export async function addImageOnlyMessage(req, res, next) {
       });
     });
     const message = await createImageOnlyMessage(
-      req.user.id,
+      req.user!.id,
       toUserID,
       toGroupID,
       data,
     );
+    void publishNewMessage(message).catch((error: unknown) => {
+      console.error("Could not publish new message over websocket:", error);
+    });
     res.status(200).json(message);
   } catch (err) {
     return next(err);

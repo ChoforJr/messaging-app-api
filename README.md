@@ -28,6 +28,7 @@ A robust backend service for a messaging application that enables users to commu
 - **File Uploads** - Share files with Cloudinary integration
 - **User Following** - Follow/unfollow other users
 - **Contact Management** - Maintain a list of contacts
+- **Realtime Messaging** - Authenticated Socket.IO message events for direct chats and groups
 - **Password Hashing** - Secure password storage with bcryptjs
 - **CORS Security** - Configurable CORS whitelisting
 
@@ -40,11 +41,11 @@ A robust backend service for a messaging application that enables users to commu
 - **Password Hashing:** bcryptjs
 - **File Storage:** Cloudinary with Multer
 - **Validation:** express-validator
-- **Language:** JavaScript with TypeScript definitions
+- **Language:** TypeScript
 
 ## 📦 Prerequisites
 
-- Node.js (v16 or higher recommended)
+- Node.js (v20.19+, v22.12+, or v24+; required by Prisma 7)
 - PostgreSQL database
 - Cloudinary account (for file uploads)
 - npm
@@ -61,7 +62,7 @@ A robust backend service for a messaging application that enables users to commu
 2. **Install dependencies**
 
    ```bash
-   npm install
+   npm install --legacy-peer-deps
    ```
 
    > **Note:** If you encounter dependency conflicts, use the following command:
@@ -71,8 +72,11 @@ A robust backend service for a messaging application that enables users to commu
    ```
 
 3. **Set up the database**
+
+   Put your PostgreSQL connection string in `.env` as `DATABASE_URL`, then apply the existing migrations:
+
    ```bash
-   npm run prismaGen
+   npm run prisma:migrate:dev
    ```
 
 ## 🔧 Environment Variables
@@ -84,7 +88,7 @@ Create a `.env` file in the root directory with the following variables:
 DATABASE_URL=postgresql://user:password@localhost:5432/messaging_app_api
 
 # JWT Secret
-JWT_SECRET=<your-secret-key-here>
+SECRET_KEY=<your-secret-key-here>
 
 # Cloudinary Configuration
 CLOUDINARY_URL=cloudinary://cloud_name:api_key:api_secret
@@ -105,7 +109,7 @@ To generate a secure JWT secret, run:
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
 
-Copy the output and paste it as your `JWT_SECRET` in the `.env` file.
+Copy the output and paste it as your `SECRET_KEY` in the `.env` file.
 
 ## ▶️ Running the Project
 
@@ -115,58 +119,53 @@ Copy the output and paste it as your `JWT_SECRET` in the `.env` file.
 npm run dev
 ```
 
-Starts the server with file watching enabled using `--watch` flag.
+Starts the TypeScript server with `tsx` file watching enabled.
+In another terminal, use `npm run prisma:migrate:dev` after changing the Prisma schema.
 
 ### Production Build
 
 ```bash
 npm run build
+npm run prisma:migrate:deploy
 npm start
 ```
+
+Build generates the Prisma client, compiles TypeScript into `dist/`, and copies the runtime assets. Apply committed migrations separately during deployment with `prisma:migrate:deploy`; do not run `prisma migrate dev` against production.
 
 ### Database Commands
 
 ```bash
 # Generate Prisma Client
-npm run prismaGen
+npm run prisma:generate
 
-# Run migrations
-npm run prismaMg
+# Create/apply development migrations (name is optional; pass it after --)
+npm run prisma:migrate:dev -- --name describe_the_change
 
-# Generate raw SQL queries
-npm run startRawSql
+# Apply committed migrations in deployment
+npm run prisma:migrate:deploy
+
+# Check migration state or open Prisma Studio
+npm run prisma:migrate:status
+npm run prisma:studio
 ```
+
+Use `npm run typecheck` for a no-emit TypeScript check.
 
 ## 📂 Project Structure
 
 ```
 messaging-app-api/
-├── config/              # Configuration files
-│   ├── cloudinary.js    # Cloudinary setup
-│   ├── passport.js      # Authentication strategies
-│   └── prisma.js        # Database client
-├── controllers/         # Request handlers
-│   ├── add.js          # Create operations
-│   ├── edit.js         # Update operations
-│   ├── read.js         # Retrieve operations
-│   └── remove.js       # Delete operations
-├── routes/             # API route definitions
-│   ├── authRouter.js   # Authentication endpoints
-│   ├── userRouter.js   # User management endpoints
-│   ├── messageRouter.js# Message endpoints
-│   ├── groupRouter.js  # Group chat endpoints
-│   ├── fileRouter.js   # File upload endpoints
-│   └── indexRouter.js  # Index routes
-├── validations/        # Input validation middleware
-│   ├── validateSignUp.js
-│   ├── validateLogIn.js
-│   ├── validateMessage.js
-│   ├── validateGroup.js
+├── config/              # TypeScript configuration files
+├── controllers/         # TypeScript request handlers
+├── routes/              # TypeScript API route definitions
+├── validations/         # TypeScript input validation middleware
 │   └── validationChanges/
-├── prisma_queries/     # Raw database queries
+├── prisma_queries/      # Typed database queries
 ├── prisma/             # Prisma schema and migrations
 ├── public/             # Static files and client assets
-├── app.js              # Express app initialization
+├── app.ts              # Express app initialization
+├── prisma.config.ts    # Prisma CLI configuration
+├── tsconfig.json        # TypeScript compiler configuration
 └── package.json        # Project dependencies
 ```
 
@@ -195,16 +194,16 @@ Ensure your frontend URL is added to the `ALLOWED_URL1` (or `ALLOWED_URL2`, etc.
 Regenerate the Prisma client:
 
 ```bash
-npm run prismaGen
+npm run prisma:generate
 ```
 
-## Roadmap / Future Enhancements
+## Realtime Messaging
 
-- **WebSocket Integration**: "Transitioning from RESTful polling to bidirectional communication using Socket.io for instant message delivery and live notifications."
+Socket.IO runs on the same HTTP server and port as Express. Clients authenticate their socket handshake with the JWT returned by `/login`. After a text or image message is persisted through the existing REST API, the server emits a `message:new` event to the sender and intended recipients. For group messages, recipients are resolved from the group's current members. The event contains a message ID and conversation type; clients fetch the persisted messages over the authenticated REST endpoints.
 
-- **Real-time Presence**: "Implementing user 'Online/Offline' status indicators via socket connection tracking."
+The socket server accepts the same configured frontend origins as the HTTP API (`ALLOWED_URL1` through `ALLOWED_URL4`). Keep the REST API and WebSocket endpoint on the same public host when deploying.
 
-- **Add Typescript**: "This allows me to define the "shape" of incoming and outgoing data, helping catch errors during development rather than at runtime when users encounter them"
+Message history endpoints return the latest 100 messages first (newest first); the client displays them chronologically. Request older pages with `?before=<message-createdAt-ISO-date>&beforeId=<message-id>` on `/message/all` or `/message/all/groups`; continue using the oldest loaded message's date and ID as the cursor. The new message-history indexes are in Prisma migrations and should be applied with the normal deployment migration process.
 
 ## 👤 Author
 

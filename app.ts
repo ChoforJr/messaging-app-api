@@ -1,14 +1,23 @@
 import express from "express";
+import type { ErrorRequestHandler } from "express";
+import { createServer } from "node:http";
 import authRouter from "./routes/authRouter.js";
 import path from "node:path";
 import dotenv from "dotenv";
 import "./config/passport.js";
 import cors from "cors";
+import type { CorsOptions } from "cors";
+import { attachMessageSocket } from "./config/socket.js";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
-const whitelist = [process.env.ALLOWED_URL1];
+const whitelist = [
+  process.env.ALLOWED_URL1,
+  process.env.ALLOWED_URL2,
+  process.env.ALLOWED_URL3,
+  process.env.ALLOWED_URL4,
+].filter((origin): origin is string => Boolean(origin));
 
-const corsOptions = {
+const corsOptions: CorsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
@@ -43,7 +52,7 @@ console.log("------------------");
 
 app.use("/", authRouter);
 
-app.use((err, req, res, next) => {
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err.message === "Not allowed by CORS") {
     return res.status(403).json({
       status: "error",
@@ -53,12 +62,18 @@ app.use((err, req, res, next) => {
 
   // If it's not a CORS error, let Express handle it normally (or your own general error handler)
   return next(err);
-});
+};
+app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, (error) => {
-  if (error) {
-    throw error;
-  }
+const PORT = Number(process.env.PORT ?? 5000);
+if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
+  throw new Error("PORT must be an integer between 1 and 65535");
+}
+const server = createServer(app);
+attachMessageSocket(server, whitelist);
+server.listen(PORT, () => {
   console.log(`listening on port ${PORT}!`);
+});
+server.on("error", (error) => {
+  throw error;
 });

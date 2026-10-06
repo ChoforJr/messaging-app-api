@@ -1,6 +1,12 @@
 import prisma from "../config/prisma.js";
+import type { Prisma } from "../generated/prisma/client.js";
 
-export async function createGuest(username, password, displayName, bio) {
+export async function createGuest(
+  username: string,
+  password: string,
+  displayName: string,
+  bio: string,
+) {
   await prisma.user.create({
     data: {
       username: username,
@@ -16,7 +22,12 @@ export async function createGuest(username, password, displayName, bio) {
   });
 }
 
-export async function createOtherUser(username, password, displayName, bio) {
+export async function createOtherUser(
+  username: string,
+  password: string,
+  displayName: string,
+  bio: string,
+) {
   await prisma.user.create({
     data: {
       username: username,
@@ -31,7 +42,11 @@ export async function createOtherUser(username, password, displayName, bio) {
   });
 }
 
-export async function createUser(username, password, displayName) {
+export async function createUser(
+  username: string,
+  password: string,
+  displayName: string,
+) {
   await prisma.user.create({
     data: {
       username: username,
@@ -45,7 +60,7 @@ export async function createUser(username, password, displayName) {
   });
 }
 
-export async function insertFiles(data) {
+export async function insertFiles(data: Prisma.FilesCreateManyInput[]) {
   await prisma.files.createMany({
     data,
     skipDuplicates: true,
@@ -53,10 +68,10 @@ export async function insertFiles(data) {
 }
 
 export async function createTextOnlyMessage(
-  authorID,
-  content,
-  toUserID,
-  toGroupID,
+  authorID: number,
+  content: string,
+  toUserID: number | null,
+  toGroupID: number | null,
 ) {
   const message = await prisma.message.create({
     data: {
@@ -69,7 +84,11 @@ export async function createTextOnlyMessage(
   return message;
 }
 
-export async function createGroup(adminID, name, description) {
+export async function createGroup(
+  adminID: number,
+  name: string,
+  description: string,
+) {
   const message = await prisma.group.create({
     data: {
       name: name,
@@ -88,10 +107,10 @@ export async function createGroup(adminID, name, description) {
 }
 
 export async function createImageOnlyMessage(
-  authorID,
-  toUserID,
-  toGroupID,
-  data,
+  authorID: number,
+  toUserID: number | null,
+  toGroupID: number | null,
+  data: Prisma.FilesCreateManyInput[],
 ) {
   const message = await prisma.message.create({
     data: {

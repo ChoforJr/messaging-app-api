@@ -2,16 +2,23 @@
   "name": "messaging-app-api",
   "version": "1.0.0",
   "description": "This the backend of the messaging app project I build to allow users to communicate with one another",
-  "main": "app.js",
+  "main": "dist/app.js",
   "type": "module",
+  "engines": {
+    "node": "^20.19 || ^22.12 || >=24.0"
+  },
   "scripts": {
-    "build": "npx prisma generate && npx tsc",
+    "build": "npm run prisma:generate && tsc && node dist/scripts/copyRuntimeAssets.js",
     "start": "node dist/app.js",
-    "dev": "node --watch app.js",
-    "prismaGen": "npx prisma generate",
-    "prismaMg": "npx prisma migrate dev --name init",
-    "startRawSql": "npx prisma generate --sql",
-    "watchRawSql": "npx prisma generate --sql --watch"
+    "dev": "tsx watch app.ts",
+    "typecheck": "tsc --noEmit",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:migrate:status": "prisma migrate status",
+    "prisma:studio": "prisma studio",
+    "prisma:generate:sql": "prisma generate --sql",
+    "prisma:watch:sql": "prisma generate --sql --watch"
   },
   "repository": {
     "type": "git",
@@ -40,13 +47,17 @@
     "node-cron": "^4.2.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.10.1",
     "@types/passport": "^1.0.17",
+    "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "ejs-lint": "^2.0.1",
     "prisma": "^7.3.0",

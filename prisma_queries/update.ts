@@ -1,6 +1,6 @@
 import prisma from "../config/prisma.js";
 
-export async function updateBio(userId, newBio) {
+export async function updateBio(userId: number, newBio: string) {
   await prisma.profile.update({
     where: {
       userId: userId,
@@ -11,7 +11,10 @@ export async function updateBio(userId, newBio) {
   });
 }
 
-export async function updateDisplayName(userId, newDisplayName) {
+export async function updateDisplayName(
+  userId: number,
+  newDisplayName: string,
+) {
   await prisma.profile.update({
     where: {
       userId: userId,
@@ -22,7 +25,7 @@ export async function updateDisplayName(userId, newDisplayName) {
   });
 }
 
-export async function updateUsername(userId, newUsername) {
+export async function updateUsername(userId: number, newUsername: string) {
   await prisma.user.update({
     where: {
       id: userId,
@@ -33,7 +36,7 @@ export async function updateUsername(userId, newUsername) {
   });
 }
 
-export async function updatePassword(userId, newPassword) {
+export async function updatePassword(userId: number, newPassword: string) {
   await prisma.user.update({
     where: {
       id: userId,
@@ -44,7 +47,11 @@ export async function updatePassword(userId, newPassword) {
   });
 }
 
-export async function updateGroupInfo(groupId, column, colContent) {
+export async function updateGroupInfo(
+  groupId: number,
+  column: "name" | "description",
+  colContent: string,
+) {
   await prisma.group.update({
     where: {
       id: groupId,
@@ -55,7 +62,7 @@ export async function updateGroupInfo(groupId, column, colContent) {
   });
 }
 
-export async function updateGroupAdmin(groupId, newAdminID) {
+export async function updateGroupAdmin(groupId: number, newAdminID: number) {
   await prisma.group.update({
     where: {
       id: groupId,
@@ -68,7 +75,7 @@ export async function updateGroupAdmin(groupId, newAdminID) {
   });
 }
 
-export async function joinGroup(groupId, profileID) {
+export async function joinGroup(groupId: number, profileID: number) {
   await prisma.group.update({
     where: {
       id: groupId,
@@ -81,7 +88,7 @@ export async function joinGroup(groupId, profileID) {
   });
 }
 
-export async function leaveGroup(groupId, profileID) {
+export async function leaveGroup(groupId: number, profileID: number) {
   await prisma.group.update({
     where: {
       id: groupId,
@@ -94,7 +101,11 @@ export async function leaveGroup(groupId, profileID) {
   });
 }
 
-export async function adminRemoveMember(groupId, adminID, userId) {
+export async function adminRemoveMember(
+  groupId: number,
+  adminID: number,
+  userId: number,
+) {
   return await prisma.$transaction(async (tx) => {
     const group1 = await tx.group.findUnique({
       where: {
@@ -123,7 +134,11 @@ export async function adminRemoveMember(groupId, adminID, userId) {
   });
 }
 
-export async function adminAddMember(groupId, adminID, userId) {
+export async function adminAddMember(
+  groupId: number,
+  adminID: number,
+  userId: number,
+) {
   return await prisma.$transaction(async (tx) => {
     const group1 = await tx.group.findUnique({
       where: {
@@ -152,7 +167,7 @@ export async function adminAddMember(groupId, adminID, userId) {
   });
 }
 
-export async function addConnect(profileID, contactId) {
+export async function addConnect(profileID: number, contactId: number) {
   await prisma.profile.update({
     where: {
       id: profileID,
@@ -168,7 +183,7 @@ export async function addConnect(profileID, contactId) {
   });
 }
 
-export async function removeConnect(profileID, contactId) {
+export async function removeConnect(profileID: number, contactId: number) {
   await prisma.profile.update({
     where: {
       id: profileID,

@@ -49,6 +49,10 @@ model Message {
   toGroup   Group?   @relation("GroupReceiveMessage", fields: [toGroupId], references: [id], onDelete: Cascade)
   toGroupId Int?
   Files     Files[]  @relation("FileOfMessage")
+
+  @@index([authorId, createdAt])
+  @@index([toUserId, createdAt])
+  @@index([toGroupId, createdAt])
 }
 
 model Group {
