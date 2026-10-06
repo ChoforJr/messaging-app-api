@@ -62,14 +62,10 @@ A robust backend service for a messaging application that enables users to commu
 2. **Install dependencies**
 
    ```bash
-   npm install --legacy-peer-deps
+   npm ci
    ```
 
-   > **Note:** If you encounter dependency conflicts, use the following command:
-
-   ```bash
-   npm install multer-storage-cloudinary --legacy-peer-deps
-   ```
+   The checked-in `.npmrc` enables `legacy-peer-deps` because `multer-storage-cloudinary@4` declares a Cloudinary 1.x peer range while this app uses Cloudinary 2.x. This setting is also used by Render installs.
 
 3. **Set up the database**
 
@@ -132,7 +128,7 @@ npm start
 
 Build generates the Prisma client, compiles TypeScript into `dist/`, and copies the runtime assets. Apply committed migrations separately during deployment with `npm run prisma:migrate:deploy`; do not run `prisma migrate dev` against production. The legacy `npm run prismaMg` command remains as a compatibility alias for `prisma migrate deploy` for existing Render service settings.
 
-For Render, set the service root directory to `messaging-app-api` (or the API repository root), build command to `npm ci --include=dev && npm run build`, pre-deploy command to `npm run prisma:migrate:deploy`, and start command to `npm start`. If the existing build command still invokes `npm run prismaMg`, it will work as a compatibility alias, but move migrations to Render's pre-deploy command so they run only after a successful build.
+For Render, set the service root directory to the API repository root, build command to `npm ci --include=dev && npm run build`, pre-deploy command to `npm run prisma:migrate:deploy`, and start command to `npm start`. Do not run `npm start` in the build command; Render must launch the compiled server using its separate start command. If the existing build command still invokes `npm run prismaMg`, it works as a compatibility alias, but move migrations to Render's pre-deploy command so they run only after a successful build.
 
 ### Database Commands
 
@@ -175,11 +171,7 @@ messaging-app-api/
 
 ### Multer Dependency Conflict
 
-If you see dependency conflict errors with `multer-storage-cloudinary`:
-
-```bash
-npm install multer-storage-cloudinary --legacy-peer-deps
-```
+The repository `.npmrc` configures npm to honor the existing Cloudinary 1.x peer-dependency mismatch. Make sure `.npmrc` is included in the deployed commit; use `npm ci` so Render installs from the checked-in lockfile.
 
 ### CORS Errors
 
